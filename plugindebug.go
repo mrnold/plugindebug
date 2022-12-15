@@ -14,5 +14,7 @@ func CreateDebugDummyScript(scriptPath string) error {
 		}
 	}
 
+	os.Args[0] = scriptPath
+
 	return nil
 }
