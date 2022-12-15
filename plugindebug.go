@@ -14,6 +14,7 @@ func CreateDebugDummyScript(scriptPath string) error {
 		}
 	}
 
+	savedPluginBinaryPath := os.Args[0]
 	os.Args[0] = scriptPath
 
 	readEnd, writeEnd, err := os.Pipe()
@@ -32,6 +33,7 @@ func CreateDebugDummyScript(scriptPath string) error {
 			ioutil.WriteFile(scriptPath, []byte(script), 0755)
 
 			os.Stdout = savedStdout
+			os.Args[0] = savedPluginBinaryPath
 			fmt.Printf("Wrote gRPC socket path '%s' to dummy plugin script '%s'\n", line, scriptPath)
 			break
 		}
