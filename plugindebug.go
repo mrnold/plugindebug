@@ -7,6 +7,11 @@ import (
 	"path"
 )
 
+// Save the script path so it can be cleaned up afterward.
+// Justification for global is that EnableDebug should only be getting called
+// once for the runtime of a particular plugin.
+var generatedScript string
+
 // EnableDebug enables local debugging of a Velero plugin, assuming
 // Velero itself is also running locally in a separate debug session.
 // Accepts a path to a plugin directory, which must also be provided
@@ -31,10 +36,24 @@ func EnableDebug(pluginDir, pluginName string) error {
 	if err := setVeleroHandshake(); err != nil {
 		return err
 	}
-	if _, err := createDebugDummyScript(path.Join(pluginDir, pluginName)); err != nil {
+	plugin := path.Join(pluginDir, pluginName)
+	if _, err := createDebugDummyScript(plugin); err != nil {
 		return err
 	}
 	return nil
+}
+
+// Cleanup removes the generated script file.
+// Call this after the plugin's Serve is done.
+func Cleanup() {
+	if generatedScript == "" {
+		return
+	}
+	_, err := os.Stat(generatedScript)
+	if os.IsNotExist(err) {
+		return
+	}
+	os.Remove(generatedScript)
 }
 
 func setVeleroHandshake() error {
@@ -48,6 +67,7 @@ func setVeleroHandshake() error {
 
 func createDebugDummyScript(scriptPath string) (chan struct{}, error) {
 	savedPluginBinaryPath := os.Args[0]
+	generatedScript = scriptPath
 	os.Args[0] = scriptPath
 	done := make(chan struct{}, 1)
 
