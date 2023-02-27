@@ -40,6 +40,7 @@ func EnableDebug(pluginDir, pluginName string) error {
 	if _, err := createDebugDummyScript(plugin); err != nil {
 		return err
 	}
+	createCleanupScript(plugin)
 	return nil
 }
 
@@ -95,4 +96,11 @@ func createDebugDummyScript(scriptPath string) (chan struct{}, error) {
 	}()
 
 	return done, nil
+}
+
+// Call from VSCode tasks.json, and add to postDebugTasks in launch.json.
+// VSCode sends SIGKILL, so the plugin itself can't clean up correctly.
+func createCleanupScript(plugin string) {
+	script := fmt.Sprintf("#!/usr/bin/env bash\nrm '%s'", plugin)
+	os.WriteFile(".cleanup.sh", []byte(script), 0755)
 }
