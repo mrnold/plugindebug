@@ -7,13 +7,10 @@ Get a Velero server up and running, with the "--plugin-dir" option set somewhere
 import "github.com/mrnold/plugindebug"
 
 func main() {
-    err := plugindebug.EnableDebug("/home/marnold/Work/velero/plugin", "velero-hello")
-	if err != nil {
-		fmt.Printf("Error creating dummy plugin: %s\n", err)
-		return
-	}
-	defer plugindebug.Cleanup()
+    plugindebug.EnableDebug("/home/marnold/Work/velero/plugin-directory", "velero-plugin-test")
+    defer plugindebug.Cleanup()
     ...
+    framework.NewServer()....Serve()
 }
 ```
 You should now be able to run the plugin under a debugger and trigger breakpoints when the main velero process asks the plugin to do something.
