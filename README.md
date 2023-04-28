@@ -43,7 +43,7 @@ This sequence of hacks just about gets Velero plugins to work with a debugger, a
             {
                 "label": "Clean Up",
                 "type": "shell",
-                "command": "./.cleanup.sh && rm .cleanup.sh"
+                "command": "${fileDirname}/.cleanup.sh && rm ${fileDirname}/.cleanup.sh"
             }
         ]
     }
